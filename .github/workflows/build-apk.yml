@@ -93,10 +93,11 @@ jobs:
 
       - name: Build summary
         if: success()
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          PACKAGE_ID: ${{ inputs.package_id }}
+          APP_THEME: ${{ inputs.theme }}
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
           echo "## APK build succeeded" >> "$GITHUB_STEP_SUMMARY"
-          echo "- App: ${{ inputs.app_name }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Package ID: ${{ inputs.package_id }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Theme: ${{ inputs.theme }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Artifact: `my-stream-${{ github.run_number }}-debug-apk`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- This is an unsigned debug APK, not a Play Store release." >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "- App: $APP_NAME" "- Package ID: $PACKAGE_ID" "- Theme: $APP_THEME" "- Artifact: my-stream-$RUN_NUMBER-debug-apk" "- This is an unsigned debug APK, not a Play Store release." >> "$GITHUB_STEP_SUMMARY"
