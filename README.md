@@ -1,71 +1,58 @@
-# My Stream
+# My Stream Studio
 
-A responsive React interface for discovering and saving sample video cards. Built with Vite and prepared for deployment to GitHub Pages.
+My Stream is a responsive web-based **Android app blueprint builder** with app identity customization and a build-readiness dashboard. It is designed as the first layer of an alternative-version APK creator: users describe a new app, save a structured blueprint, customize its name/package ID/theme, and export the blueprint as JSON.
 
-> **Project status:** UI starter / demo. The current catalog is local sample data. It does not stream real video, provide user accounts, or connect to a backend.
+## Honest project status
 
-## Features
+**Implemented in this repository**
+- Responsive React/Vite UI for desktop and mobile.
+- Local-first app blueprint creation from a user-provided description (rule-based scaffold; no hosted AI model connected).
+- Starter templates, project list/search, and browser-local persistence.
+- App display-name, package-ID and theme customization with a live illustrative preview.
+- Export a JSON blueprint file.
+- Build-readiness checklist and local build-request history.
 
-- Responsive desktop and mobile layout
-- Search by video title, creator, or category
-- Category filtering and trending sort
-- Save/unsave items with browser-local persistence
-- Sample preview screen with an explicit demo notice
-- GitHub Pages deployment workflow
-- Capacitor configuration as a starting point for Android packaging
+**Not implemented / not verified**
+- This version does **not** compile, sign, install, or download a real APK.
+- No native Android project is generated from the blueprint yet.
+- No LLM provider, authentication service, database, or remote build server is connected.
+- No claim is made that GitHub Pages deployment or Android compilation has succeeded.
 
-## Requirements
+The preview is illustrative UI, not a running native app. Blueprint export is JSON, not an APK.
 
-- Node.js 20.19+ (or a compatible newer LTS release)
-- npm
+## Run locally
 
-## Local development
+Requirements: Node.js 20.19+ and npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite prints the local development URL after startup.
-
-## Production build
+Create a production web bundle:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-The production bundle is written to `dist/`.
+The output is written to `dist/`. Run these commands locally or through CI to verify the build.
 
-## Deploy to GitHub Pages
+## Android / APK roadmap
 
-1. In the repository, open **Settings → Pages**.
-2. Select **GitHub Actions** as the build and deployment source.
-3. Push to `main` or manually run **Deploy My Stream to GitHub Pages** in the Actions tab.
-4. Wait for both the build and deploy jobs to succeed. The published URL is shown in the workflow deployment environment and Pages settings.
+A real APK pipeline needs additional implementation:
+1. Turn the blueprint into a valid Android project (for example, a generated Capacitor app or native Android template).
+2. Install and configure the Android SDK and Gradle in a build runner.
+3. Add automated build and install tests.
+4. Configure secure signing credentials outside the repository.
+5. Store and deliver APK artifacts from successful builds only.
 
-## Android packaging
+Do not place signing keys or credentials in source control. A package ID should be validated and unique before publishing.
 
-The repository includes `capacitor.config.json` as a starting point. To add Android support after verifying the web build:
+## Repository
 
-```bash
-npm install
-npx cap add android
-npm run build
-npx cap sync android
-npx cap open android
-```
-
-Android Studio and the Android SDK are required to build an APK. An APK is not included in this repository.
-
-## Next production milestones
-
-1. Add a backend and media catalog API.
-2. Connect a real, licensed video playback source.
-3. Add authentication and server-side user profiles if accounts are required.
-4. Add automated tests and dependency lockfile verification.
-5. Configure monitoring, privacy controls, and content reporting before public launch.
+Source: https://github.com/akilesh2313-ops/My-stream-
 
 ## License
 
-No license has been added yet. Add one before accepting external contributions or allowing reuse.
+No license has been added. Add one before distributing or accepting external contributions.
