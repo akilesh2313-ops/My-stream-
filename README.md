@@ -1,58 +1,45 @@
 # My Stream Studio
 
-My Stream is a responsive web-based **Android app blueprint builder** with app identity customization and a build-readiness dashboard. It is designed as the first layer of an alternative-version APK creator: users describe a new app, save a structured blueprint, customize its name/package ID/theme, and export the blueprint as JSON.
+My Stream is a responsive app-blueprint builder with a GitHub Actions workflow that can compile a **real Android debug APK** from a generated starter app.
 
-## Honest project status
+## What works in this repository
 
-**Implemented in this repository**
-- Responsive React/Vite UI for desktop and mobile.
-- Local-first app blueprint creation from a user-provided description (rule-based scaffold; no hosted AI model connected).
-- Starter templates, project list/search, and browser-local persistence.
-- App display-name, package-ID and theme customization with a live illustrative preview.
-- Export a JSON blueprint file.
-- Build-readiness checklist and local build-request history.
+- Responsive React/Vite web interface.
+- Local app blueprints, starter templates, customization, and JSON export.
+- A manually triggered Android build workflow at `.github/workflows/build-apk.yml`.
+- Workflow inputs for app name, package ID, description, and theme.
+- A Node generator that creates a self-contained starter app page and Capacitor config.
+- GitHub Actions installs Java/Node dependencies, creates the Capacitor Android platform, runs Gradle `assembleDebug`, verifies the APK exists, and uploads it as a downloadable artifact.
 
-**Not implemented / not verified**
-- This version does **not** compile, sign, install, or download a real APK.
-- No native Android project is generated from the blueprint yet.
-- No LLM provider, authentication service, database, or remote build server is connected.
-- No claim is made that GitHub Pages deployment or Android compilation has succeeded.
+## Build an APK
 
-The preview is illustrative UI, not a running native app. Blueprint export is JSON, not an APK.
+1. Open the repository's **Actions** tab: https://github.com/akilesh2313-ops/My-stream-/actions
+2. Select **Build Android APK**.
+3. Choose **Run workflow**.
+4. Enter the app name, a unique package ID such as `com.example.myapp`, a description of the app, and a theme.
+5. Start the workflow and wait for all steps to pass.
+6. Open the successful run, find **Artifacts**, and download the `my-stream-…-debug-apk` artifact. Extract the ZIP to get `app-debug.apk`.
 
-## Run locally
+The APK is built remotely by GitHub Actions; this web page itself does not compile APKs on your phone. The workflow is manual so it will not consume build minutes on every push.
+
+## Important limitations
+
+This is a working starter-app generation pipeline, **not a general-purpose AI code-generation engine yet**. The description is rendered into an app shell and feature-outline cards; it does not infer and implement arbitrary functional features from prose. The resulting APK is a debug APK and is not signed for Play Store release. A release pipeline needs secure signing credentials, tests, and release verification. APK builds and Pages deployment are not considered successful until the corresponding GitHub Actions run completes successfully.
+
+The workflow requires GitHub Actions to be enabled for this repository and its runner to have access to required Android SDK packages. GitHub's hosted Ubuntu runners normally provide Android build tooling; if the Gradle build reports missing SDK packages, add an explicit Android SDK setup step and rerun.
+
+## Run the web studio locally
 
 Requirements: Node.js 20.19+ and npm.
 
 ```bash
 npm install
 npm run dev
-```
-
-Create a production web bundle:
-
-```bash
 npm run build
-npm run preview
 ```
-
-The output is written to `dist/`. Run these commands locally or through CI to verify the build.
-
-## Android / APK roadmap
-
-A real APK pipeline needs additional implementation:
-1. Turn the blueprint into a valid Android project (for example, a generated Capacitor app or native Android template).
-2. Install and configure the Android SDK and Gradle in a build runner.
-3. Add automated build and install tests.
-4. Configure secure signing credentials outside the repository.
-5. Store and deliver APK artifacts from successful builds only.
-
-Do not place signing keys or credentials in source control. A package ID should be validated and unique before publishing.
 
 ## Repository
 
-Source: https://github.com/akilesh2313-ops/My-stream-
+https://github.com/akilesh2313-ops/My-stream-
 
-## License
-
-No license has been added. Add one before distributing or accepting external contributions.
+No license has been added yet.
