@@ -1,0 +1,5 @@
+{
+  "appId": "com.mystream.app",
+  "appName": "My Stream",
+  "webDir": "dist"
+}
