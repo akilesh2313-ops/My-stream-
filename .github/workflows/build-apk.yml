@@ -1,0 +1,99 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_name:
+        description: 'Display name for the generated Android app'
+        required: true
+        type: string
+        default: 'My Stream App'
+      package_id:
+        description: 'Unique Android package ID (reverse-domain format)'
+        required: true
+        type: string
+        default: 'com.mystream.generatedapp'
+      app_description:
+        description: 'Describe the app and its main screens/features'
+        required: true
+        type: string
+        default: 'A simple app starter with a home screen, project outline, and get-started interaction.'
+      theme:
+        description: 'App color theme'
+        required: true
+        type: choice
+        options:
+          - Midnight
+          - Light
+          - Ocean
+          - Forest
+        default: Midnight
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-apk:
+    name: Generate and compile debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install project dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Generate app from workflow inputs
+        env:
+          APP_NAME: ${{ inputs.app_name }}
+          APP_PACKAGE_ID: ${{ inputs.package_id }}
+          APP_DESCRIPTION: ${{ inputs.app_description }}
+          APP_THEME: ${{ inputs.theme }}
+        run: node scripts/generate-android-app.mjs
+
+      - name: Add Android platform and sync generated app
+        run: |
+          npx cap add android --config capacitor.generated.config.json
+          npx cap sync android --config capacitor.generated.config.json
+
+      - name: Compile debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon --stacktrace assembleDebug
+
+      - name: Verify APK exists
+        run: test -s android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-stream-${{ github.run_number }}-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Build summary
+        if: success()
+        run: |
+          echo "## APK build succeeded" >> "$GITHUB_STEP_SUMMARY"
+          echo "- App: ${{ inputs.app_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Package ID: ${{ inputs.package_id }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Theme: ${{ inputs.theme }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Artifact: `my-stream-${{ github.run_number }}-debug-apk`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- This is an unsigned debug APK, not a Play Store release." >> "$GITHUB_STEP_SUMMARY"
